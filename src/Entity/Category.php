@@ -4,13 +4,12 @@ namespace App\Entity;
 
 use App\Entity\Article;
 use Doctrine\ORM\Mapping as ORM;
-use App\Model\TimestampedInterface;
 use App\Repository\CategoryRepository;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
 
 #[ORM\Entity(repositoryClass: CategoryRepository::class)]
-class Category implements TimestampedInterface
+class Category 
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -26,7 +25,7 @@ class Category implements TimestampedInterface
     #[ORM\Column(length: 10)]
     private ?string $color = null;
 
-    #[ORM\ManyToMany(targetEntity: Article::class, inversedBy: 'categories')]
+    #[ORM\ManyToMany(targetEntity: Article::class, mappedBy: 'categories')]
     private Collection $articles;
 
     public function __construct()
@@ -97,5 +96,10 @@ class Category implements TimestampedInterface
         $this->articles->removeElement($article);
 
         return $this;
+    }
+
+    public function __toString(): string
+    {
+        return $this->name;
     }
 }
