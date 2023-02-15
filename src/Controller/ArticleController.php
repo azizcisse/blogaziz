@@ -15,8 +15,13 @@ class ArticleController extends AbstractController
         if (!$article) {
             return $this->redirectToRoute('app_accueil');
         }
-        return $this->render('article/show.html.twig', [
+
+        $commentForm = $this->createForm(CommentType::class, $comment);
+
+
+        return $this->renderForm('article/show.html.twig', [
             'article' => $article,
+            'commentForm' => $commentForm,
         ]);
     }
 }
