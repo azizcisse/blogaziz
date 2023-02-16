@@ -2,9 +2,10 @@
 
 namespace App\Entity;
 
-use App\Repository\CommentRepository;
+use App\Entity\Article;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\CommentRepository;
 
 #[ORM\Entity(repositoryClass: CommentRepository::class)]
 class Comment
@@ -28,6 +29,10 @@ class Comment
     #[ORM\JoinColumn(nullable: false)]
     private ?User $user = null;
 
+    public function __construct(Article $article)
+    {
+        $this->article = $article;
+    }
     public function getId(): ?int
     {
         return $this->id;
