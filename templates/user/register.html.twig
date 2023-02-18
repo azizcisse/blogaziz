@@ -1,0 +1,23 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Register
+{% endblock %}
+
+{% block body %}
+
+	<div class="container w-50">
+		<h1>Page d'Inscription</h1>
+		{{ form_start(registrationForm) }}
+		{{ form_row(registrationForm.username, {
+            label: "Nom d'Utilisateur"
+        }) }}
+		{{ form_row(registrationForm.plainPassword) }}
+		{{ form_row(registrationForm.agreeTerms, {
+            label: "Acceptez les Conditions"
+        }) }}
+
+		<button type="submit" class="btn btn-primary mr-5">S'Inscrire</button> 
+        <button type="reset" class="btn btn-danger"><a href="{{path('app_accueil')}}">Annuler</a></button>
+		{{ form_end(registrationForm) }}
+	</div>
+{% endblock %}
