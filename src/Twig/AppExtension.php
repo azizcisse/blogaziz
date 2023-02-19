@@ -2,80 +2,135 @@
 
 namespace App\Twig;
 
+use App\Controller\Admin\ArticleCrudController;
+use App\Controller\Admin\CategoryCrudController;
+use App\Controller\Admin\PageCrudController;
+use App\Entity\Article;
+use App\Entity\Category;
+use App\Entity\Comment;
 use App\Entity\Menu;
+use App\Entity\Page;
+use Doctrine\Common\Collections\Collection;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
+use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
+use Symfony\Component\Routing\RouterInterface;
+use Symfony\Component\Security\Core\Security;
+use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
 use Twig\TwigFunction;
-use App\Twig\AppExtension;
-use Twig\Extension\AbstractExtension;
-use Symfony\Component\Routing\RouterInterface;
-use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
-
 
 class AppExtension extends AbstractExtension
 {
     const ADMIN_NAMESPACE = 'App\Controller\Admin';
 
     public function __construct(
-        private RouterInterface $route, 
-        private AdminUrlGenerator $adminUrlGenerator
-        )
-    {
+        private RouterInterface $router,
+        private AdminUrlGenerator $adminUrlGenerator,
+        private Security $security
+    ) {
 
     }
-      public function getFilters(): array
-      {
+
+    public function getFunctions(): array
+    {
         return [
-            new TwigFilter('menuLink', [$this, 'menuLink'])
+            new TwigFunction('ea_admin_url', [$this, 'getAdminUrl']),
+            new TwigFunction('ea_edit', [$this, 'getAdminEditUrl']),
+            new TwigFunction('entity_label', [$this, 'getEditCurrentEntityLabel']),
         ];
-      }
+    }
 
-      public function getFunctions(): array
-      {
+    public function getFilters(): array
+    {
         return [
-            new TwigFunction('ea_index', [$this, 'getAdminUrl'])
+            new TwigFilter('menuLink', [$this, 'menuLink']),
+            new TwigFilter('categoriesToString', [$this, 'categoriesToString']),
+            new TwigFilter('isCommentAuthor', [$this, 'isCommentAuthor']),
         ];
-      }
-    
-      public function getAdminUrl(string $controller)
-      {
-        return $this->adminUrlGenerator
-        ->setController(self::ADMIN_NAMESPACE, DIRECTORY_SEPARATOR . $controller)
-           ->generateUrl();
-      }
+    }
 
-      public function menuLink(Menu $menu): string
-      {
-        $article = $menu->getArticle();
-        $category = $menu->getCatégory();
-        $page = $menu->getPage();
-
+    public function menuLink(Menu $menu): string
+    {
         $url = $menu->getLink() ?: '#';
 
-        if ($url != '#') {
+        if ($url !== '#') {
             return $url;
         }
 
-        if ($article) {
-            $name = 'article_show'; 
-            $slug = $article->getSlug();
-        }
-
-        if ($category) {
-            $name = 'category_show'; 
-            $slug = $category->getSlug();
-        }
+        $page = $menu->getPage();
 
         if ($page) {
-            $name = 'page_show'; 
+            $name = 'page_show';
             $slug = $page->getSlug();
         }
 
-        if (!isset($name, $slug)) {
-            return $url;
+        $article = $menu->getArticle();
+
+        if ($article) {
+            $name = 'article_show';
+            $slug = $article->getSlug();
         }
-        
+
+        $category = $menu->getCategory();
+
+        if ($category) {
+            $name = 'category_show';
+            $slug = $category->getSlug();
+        }
+
         return $this->router->generate($name, [
-               'slug' => $slug,
+            'slug' => $slug
         ]);
-      }
+    }
+
+    public function categoriesToString(Collection $categories): string
+    {
+        $generateCategoryLink = function(Category $category) {
+            $url = $this->router->generate('category_show', [
+                'slug' => $category->getSlug()
+            ]);
+            return "<a href='$url' class='text-decoration-none' style='color: {$category->getColor()}'>{$category->getName()}</a>";
+        };
+
+        $categoryLinks = array_map($generateCategoryLink, $categories->toArray());
+
+        return implode(', ', $categoryLinks);
+    }
+
+    public function getEditCurrentEntityLabel(object $entity): string
+    {
+        return match($entity::class) {
+            Article::class => "Modifier l'article",
+            Category::class => 'Modifier la catégorie',
+            Page::class => 'Modifier la page'
+        };
+    }
+
+    public function getAdminUrl(string $controller, string $action = Action::INDEX): string
+    {
+        return $this->adminUrlGenerator
+            ->setController(self::ADMIN_NAMESPACE . '\\' . $controller)
+            ->setAction($action)
+            ->generateUrl();
+    }
+
+    public function getAdminEditUrl(object $entity): ?string
+    {
+        $crudController = match ($entity::class) {
+            Article::class => ArticleCrudController::class,
+            Category::class => CategoryCrudController::class,
+            Page::class => PageCrudController::class
+        };
+
+        return $this->adminUrlGenerator
+            ->setController($crudController)
+            ->setAction(Action::EDIT)
+            ->setEntityId($entity->getId())
+            ->generateUrl();
+    }
+
+    public function isCommentAuthor(Comment $comment): bool
+    {
+        return $this->security->getUser() === $comment->getUser();
+    }
 }

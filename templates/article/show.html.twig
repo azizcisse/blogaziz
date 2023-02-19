@@ -24,7 +24,7 @@
 				<hr>
 			{% endif %}
 			<div class="comment-list">
-				{% for comment in article.comments %}
+				{% for comment in comments %}
 					{% include 'comment/show.html.twig' with [comment] %}
 				{% endfor %}
 			</div>

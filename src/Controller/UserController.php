@@ -3,17 +3,22 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Service\OptionService;
 use App\Form\RegistrationFormType;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class UserController extends AbstractController
 {
+    public function __construct(
+        private OptionService $optionService,      
+    ) {}
+
     #[Route('path:/user/{username}', name:'app_profil')]
 function index(?User $user): Response
     {
@@ -27,6 +32,11 @@ function index(?User $user): Response
 #[Route('/user/register', name:'app_register')]
 function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, EntityManagerInterface $entityManager): Response
     {
+        $usersCanRegister = $this->optionService->getValue('users_can_register');
+        if (!$usersCanRegister) {
+            return $this->redirectToRoute('appp_accueil');
+        }
+
     $user = new User();
     $form = $this->createForm(RegistrationFormType::class, $user);
     $form->handleRequest($request);

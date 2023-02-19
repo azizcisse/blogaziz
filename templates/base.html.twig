@@ -1,4 +1,6 @@
 {% set menus = menuService.findAll %}
+{% set options = optionService.findAll %}
+
 <!DOCTYPE html>
 <html lang="fr">
 	<head>
@@ -23,34 +25,29 @@
 				<div class="container d-flex flex-wrap">
 					<div class="dropdown">
 						<a class="nav nav-link dropdown-toggle text-white" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-							Mon Blog
+							{{ options['blog_copyright']}}
 						</a>
 						<ul class="dropdown-menu" aria-labelledby="dropdownMenuButtonAdminDashboard">
 							<li>
 								<a class="dropdown-item" href="{{path('admin')}}">Tableau de Bord</a>
 							</li>
-							{% if is_granted('ROLE_ADMIN') %}
-							<li>
-								<a class="dropdown-item" href="#">Menus</a>
-							</li>
-							{% endif %}
+							 {% if is_granted('ROLE_ADMIN') %}
+                            <li><a class="dropdown-item" href="{{ ea_admin_url('MenuCrudController') }}">Menus</a></li>
+                        {% endif %}
 						</ul>
 					</div>
 
-					<div class="dropdown">
-						<a class="nav nav-link dropdown-toggle text-white" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-							Ajouter
-						</a>
-						<ul class="dropdown-menu" aria-labelledby="dropdownMenuButtonAdminAdd">
-							<li>
-								<a class="dropdown-item" href="#">Articles</a>
-							</li>
-							<li>
-								<a class="dropdown-item" href="#">Pages</a>
-							</li>
-						</ul>
-					</div>
-
+					 <div class="dropdown">
+                    <a class="nav-link link-light px-2 dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Ajouter
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="{{ ea_admin_url('ArticleCrudController', 'new') }}">Article</a></li>
+                        {% if is_granted('ROLE_ADMIN') %}
+                            <li><a class="dropdown-item" href="{{ ea_admin_url('PageCrudController', 'new') }}">Page</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
 				</div>
 			</nav>
 		{% endif %}
@@ -59,7 +56,7 @@
 			<header class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom">
 				<a class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-dark text-decoration-none" href="{{path('app_accueil')}}">
 					<span class="fs-4">
-						Mon Blog
+						{{ options['blog_copyright']}}
 					</span>
 				</a>
 				<ul class="nav nav-pills">
@@ -87,9 +84,11 @@
 						{% endif %}
 					{% endfor %}
 					{% if not is_granted('IS_AUTHENTICATED_FULLY') %}
+					{% if '1' == options['users_can_register'] %}
 						<li class="nav-item">
 							<a class="nav-link text-dark" href="{{ path('app_register')}}">S'Inscrire</a>
 						</li>
+						{% endif %}
 						<li class="nav-item">
 							<a class="nav-link text-dark" href="{{ path('app_login')}}">Se Connecter</a>
 						</li>
@@ -116,7 +115,7 @@
 			<footer class="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top">
 				<div class="col-md-4 d-flex align-items-center">
 					<span class="copyright">©{{'now' | date('Y')}}
-						AZIZ-6C. Tous Droits Réservés.
+						AZIZ-6C. {{ options['blog_copyright']}}
 					</span>
 				</div>
 			</footer>

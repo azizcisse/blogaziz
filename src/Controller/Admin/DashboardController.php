@@ -5,6 +5,7 @@ namespace App\Controller\Admin;
 use App\Entity\Menu;
 use App\Entity\User;
 use App\Entity\Media;
+use App\Entity\Option;
 use App\Entity\Article;
 use App\Entity\Comment;
 use App\Entity\Category;
@@ -68,6 +69,10 @@ function configureMenuItems(): iterable
         yield MenuItem::subMenu('Comptes', 'fas fa-user')->setSubItems([
             MenuItem::linkToCrud('Liste des Comptes', 'fas fa-user-friends', User::class),
             MenuItem::linkToCrud('Ajouter', 'fas fa-plus', User::class)->setAction(Crud::PAGE_NEW),
+        ]);
+
+        yield MenuItem::subMenu('Réglages', 'fas fa-cog')->setSubItems([
+            MenuItem::linkToCrud('Général', 'fas fa-cog', Option::class),
         ]);
     }
 
