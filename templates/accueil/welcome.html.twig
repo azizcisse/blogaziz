@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="fr">
+	<head>
+		<meta charset="UTF-8">
+		<title>Bienvenue
+			{% block title %}{% endblock %}
+		</title>
+		<link
+		rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text></svg>">
+		{# Run `composer require symfony/webpack-encore-bundle` to start using Symfony UX #}
+		{% block stylesheets %}
+			{{ encore_entry_link_tags('app') }}
+		{% endblock %}
+
+		{% block javascripts %}
+			{{ encore_entry_script_tags('app') }}
+		{% endblock %}
+	</head>
+	<body>
+		<div class="container">
+			<div class="row">
+				<div class="col">
+					<div class="card">
+						<div class="card-body">
+							<div class="card">
+								<h5 class="card-title">Bienvenue</h5>
+								<p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+								</p>
+                              <hr>
+
+                               <h5 class="card-title">Informations Nécessaires</h5>
+							  <hr>
+                                {{ form(form) }}
+                            </div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>

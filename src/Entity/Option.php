@@ -10,6 +10,12 @@ use App\Repository\OptionRepository;
 #[ORM\Table(name: '`option`')]
 class Option
 {
+    const BLOG_ARTICLES_LIMIT = 'blog_articles_limit';
+    const BLOG_COPYRIGHT = 'blog_copyright';
+    const BLOG_TITLE = 'blog_title';
+    const HEADER_TITLE = 'header_title';
+
+    
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -24,10 +30,10 @@ class Option
     #[ORM\Column('text', nullable: true)]
     private ?string $value = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $type = null;
 
-    public function __construct(string $label, string $name, string $value, string $type)
+    public function __construct(string $label, string $name, string $value, ?string $type = null)
     {
         $this->label = $label;
         $this->name = $name;
@@ -90,7 +96,7 @@ class Option
 
     public function __toString(): string
     {
-        return $this->value;
+        return $this->value?? '';
     }
 
 }

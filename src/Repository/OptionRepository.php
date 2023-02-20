@@ -3,15 +3,13 @@
 namespace App\Repository;
 
 use App\Entity\Option;
-use Doctrine\ORM\QueryBuilder;
-use Doctrine\ORM\NoResultException;
-use Doctrine\Persistence\ManagerRegistry;
-use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
+use Doctrine\ORM\QueryBuilder;
+use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<Option>
- *
  * @method Option|null find($id, $lockMode = null, $lockVersion = null)
  * @method Option|null findOneBy(array $criteria, array $orderBy = null)
  * @method Option[]    findAll()
